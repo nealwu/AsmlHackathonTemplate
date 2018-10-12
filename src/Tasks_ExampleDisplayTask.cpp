@@ -177,10 +177,10 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     MY_DEBUG_PRINTF("Received message: %s\n", msg.c_str());
     char str[100];
     Facilities::MeshNetwork::NodeId their_id, my_id;
-    int seconds_to_next;
+    int seconds_to_next = -1;
     int values_read = sscanf(msg.c_str(), "%s %ud %d", str, &their_id, &seconds_to_next);
 
-    if (values_read >= 3) {
+    if (seconds_to_next >= 0) {
         int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
         next_time_goal = current_time + seconds_to_next * 1e9;
         transmit_task->next_time = next_time_goal;

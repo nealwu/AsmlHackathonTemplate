@@ -34,6 +34,8 @@ void ExampleTransmitTask::execute() {
     if (current_time >= next_time) {
         msg += " 4";
         next_time = current_time + 4e9;
+    } else {
+        msg += " -1";
     }
 
     m_mesh.sendBroadcast(msg);
