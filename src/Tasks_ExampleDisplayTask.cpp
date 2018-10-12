@@ -14,7 +14,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <chrono>
 #include <functional>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -81,7 +83,7 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
 
         for (int col = 0; col < N; col++) {
             int cell_index = max(abs(2 * row - (N - 1)), abs(2 * col - (N - 1)));
-            m_grid[row][col] = cell_index % 4 >= 2 ? '*' : ' ';
+            m_grid[row][col] = cell_index % 8 >= 6 ? '*' : ' ';
         }
     }
 
@@ -144,18 +146,39 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     if (!msg.startsWith("XYZ"))
         return;
 
-    static std::vector<Facilities::MeshNetwork::NodeId> ids;
+    static std::map<Facilities::MeshNetwork::NodeId, uint64_t> id_last_seen;
 
     MY_DEBUG_PRINTF("Received message: %s\n", msg.c_str());
     char str[100];
-    int id;
-    sscanf(msg.c_str(), "%s %d", str, &id);
+    Facilities::MeshNetwork::NodeId their_id, my_id;
+    sscanf(msg.c_str(), "%s %ud", str, &their_id);
     assert(string(str) == "XYZ");
-    ids.push_back(id);
-    ids.push_back(m_mesh.getMyNodeId());
-    std::sort(ids.begin(), ids.end());
-    ids.resize(std::unique(ids.begin(), ids.end()) - ids.begin());
-    m_index = std::find(ids.begin(), ids.end(), m_mesh.getMyNodeId()) - ids.begin();
+
+    uint64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
+    id_last_seen[their_id] = current_time;
+    my_id = m_mesh.getMyNodeId();
+    id_last_seen[my_id] = current_time;
+
+    std::vector<Facilities::MeshNetwork::NodeId> ids;
+
+    for (auto &id : id_last_seen)
+        ids.push_back(id.first);
+
+    uint64_t cutoff_time = current_time - std::chrono::milliseconds(2500).count();
+
+    for (auto &id: ids)
+        if (id_last_seen[id] < cutoff_time)
+            id_last_seen.erase(id);
+
+    m_index = 0;
+
+    for (auto &id : id_last_seen) {
+        if (id.first == my_id)
+            break;
+
+        m_index++;
+    }
+
     MY_DEBUG_PRINTF("My index is %d\n", m_index);
     m_x = (m_x + 1) % LEDMATRIX_WIDTH;
 }
