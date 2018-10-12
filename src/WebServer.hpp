@@ -11,9 +11,10 @@ public:
     void initialize();
     void loop();
 private:
-    Facilities::MeshNetwork& mesh;
-    AsyncWebServer server;
-    DNSServer dnsServer;
+    String m_state;
+    Facilities::MeshNetwork& m_mesh;
+    AsyncWebServer m_server;
+    DNSServer m_dnsServer;
 };
 
 #endif
