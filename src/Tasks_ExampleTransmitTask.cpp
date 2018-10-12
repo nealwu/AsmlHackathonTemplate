@@ -24,9 +24,12 @@ ExampleTransmitTask::ExampleTransmitTask(Facilities::MeshNetwork& mesh) :
 
 void ExampleTransmitTask::execute()
 {
-   String msg = F("Ping from node ");
-   msg += m_mesh.getMyNodeId();
-   m_mesh.sendBroadcast( msg );
+    String msg = F("XYZ");
+    m_mesh.sendBroadcast(msg);
+    return;
+    // String msg = F("XYZ_Ping from node ");
+    // msg += m_mesh.getMyNodeId();
+    // m_mesh.sendBroadcast( msg );
 }
 
 } // namespace Tasks
