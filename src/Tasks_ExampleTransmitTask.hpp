@@ -29,6 +29,7 @@ public:
 	ExampleTransmitTask& operator=(const ExampleTransmitTask& other) = delete;
 
    void execute();
+    int64_t next_time;
 
 private:
    Facilities::MeshNetwork& m_mesh;

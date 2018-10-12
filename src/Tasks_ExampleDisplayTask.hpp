@@ -10,6 +10,7 @@
 #define __Tasks_ExampleDisplayTask__
 
 #include "Facilities_MeshNetwork.hpp"
+#include "Tasks_ExampleTransmitTask.hpp"
 
 #include <painlessMesh.h>
 #include <LEDMatrixDriver.hpp>
@@ -36,6 +37,9 @@ public:
 	ExampleDisplayTask& operator=(const ExampleDisplayTask& other) = delete;
 
    void execute();
+   void setTransmit(ExampleTransmitTask *task) {
+       transmit_task = task;
+   }
 
 private:
    static const int LEDMATRIX_WIDTH;
@@ -54,6 +58,8 @@ private:
    int m_x;
    int current_grid;
    int64_t next_time_goal;
+
+   ExampleTransmitTask *transmit_task;
 
    void receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg);
 

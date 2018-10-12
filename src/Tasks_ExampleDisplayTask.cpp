@@ -143,7 +143,7 @@ int display_row(int row) {
 //! Update display
 void ExampleDisplayTask::execute() {
     m_lmd.clear();
-    int64_t current_time = std::chrono::system_clock::now().time_since_epoch().count();
+    int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
     bool empty_display = false;
 
     if (current_time >= next_time_goal) {
@@ -177,7 +177,15 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     MY_DEBUG_PRINTF("Received message: %s\n", msg.c_str());
     char str[100];
     Facilities::MeshNetwork::NodeId their_id, my_id;
-    sscanf(msg.c_str(), "%s %ud", str, &their_id);
+    int seconds_to_next;
+    int values_read = sscanf(msg.c_str(), "%s %ud %d", str, &their_id, &seconds_to_next);
+
+    if (values_read >= 3) {
+        int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
+        next_time_goal = current_time + seconds_to_next * 1e9;
+        transmit_task->next_time = next_time_goal;
+    }
+
     assert(string(str) == "XYZ");
 
     int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
