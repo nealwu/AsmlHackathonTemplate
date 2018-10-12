@@ -49,6 +49,7 @@ private:
    LEDMatrixDriver m_lmd;
 
    std::vector<std::string> m_grid;
+   int m_index;
 
    int m_x;
 
