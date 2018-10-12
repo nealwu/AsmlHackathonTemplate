@@ -184,6 +184,7 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
         int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
         next_time_goal = current_time + seconds_to_next * 1e9;
         transmit_task->next_time = next_time_goal;
+        MY_DEBUG_PRINTLN(("Got a time; setting next time goal to " + to_string(next_time_goal)).c_str());
     }
 
     assert(string(str) == "XYZ");
