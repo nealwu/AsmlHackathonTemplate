@@ -5,6 +5,7 @@
 #include "Facilities_MeshNetwork.hpp"
 #include "Tasks_ExampleTransmitTask.hpp"
 #include "Tasks_ExampleDisplayTask.hpp"
+#include "WebServer.hpp"
 
 // Translation unit local variables
 namespace {
@@ -12,9 +13,12 @@ namespace {
 Scheduler                  taskScheduler;
 
 Facilities::MeshNetwork    meshNetwork;
+WebServer                  webServer(meshNetwork);
 Tasks::ExampleTransmitTask exampleTransmitTask(meshNetwork);
 Tasks::ExampleDisplayTask  exampleDisplayTask(meshNetwork);
 }
+
+
 
 //! Called once at board startup.
 void setup()
@@ -22,7 +26,7 @@ void setup()
    MY_DEBUG_BEGIN(115200);
 
    // Create MeshNetwork
-   meshNetwork.initialize(F("Mesh-Prefix"), F("Mesh-Secret-Password"), taskScheduler);
+   meshNetwork.initialize(F("Mesh-gg"), F("Mesh-Secret-Password"), taskScheduler);
 
    // Create and add tasks.
    taskScheduler.addTask( exampleTransmitTask );
@@ -30,6 +34,7 @@ void setup()
    exampleTransmitTask.enable();
    exampleDisplayTask.enable();
 
+   webServer.initialize();
 
    MY_DEBUG_PRINTLN(F("Setup completed"));
 }
@@ -39,4 +44,5 @@ void loop()
 {
    taskScheduler.execute();
    meshNetwork.update();
+   webServer.loop();
 }
