@@ -81,7 +81,7 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
 
         for (int col = 0; col < N; col++) {
             int cell_index = max(abs(2 * row - (N - 1)), abs(2 * col - (N - 1)));
-            m_grid[row][col] = cell_index % 4 < 2 ? '*' : ' ';
+            m_grid[row][col] = cell_index % 4 >= 2 ? '*' : ' ';
         }
     }
 
