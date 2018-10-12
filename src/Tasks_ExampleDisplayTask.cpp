@@ -167,8 +167,10 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     uint64_t cutoff_time = current_time - std::chrono::milliseconds(2500).count();
 
     for (auto &id: ids)
-        if (id_last_seen[id] < cutoff_time)
+        if (id_last_seen[id] < cutoff_time) {
+            MY_DEBUG_PRINTF("Erasing %lld which has not been seen since %lld; cutoff is %lld and current time is %lld\n", id, id_last_seen[id], cutoff_time, current_time);
             id_last_seen.erase(id);
+        }
 
     m_index = 0;
 
