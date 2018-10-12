@@ -15,6 +15,8 @@
 #include <LEDMatrixDriver.hpp>
 
 #include <functional>
+#include <string>
+#include <vector>
 
 // Forward declarations.
 namespace Facilities { class MeshNetwork; }
@@ -45,6 +47,8 @@ private:
 
    Facilities::MeshNetwork& m_mesh;
    LEDMatrixDriver m_lmd;
+
+   std::vector<std::string> m_grid;
 
    int m_x;
 

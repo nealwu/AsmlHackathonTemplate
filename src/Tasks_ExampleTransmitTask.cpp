@@ -16,20 +16,15 @@ namespace Tasks {
 
 
 ExampleTransmitTask::ExampleTransmitTask(Facilities::MeshNetwork& mesh) :
-   Task(TASK_SECOND * 1 , TASK_FOREVER, std::bind(&ExampleTransmitTask::execute, this)),
-   m_mesh(mesh)
-{
+    Task(TASK_SECOND * 1 , TASK_FOREVER, std::bind(&ExampleTransmitTask::execute, this)),
+    m_mesh(mesh) {
 
 }
 
-void ExampleTransmitTask::execute()
-{
-    String msg = F("XYZ");
+void ExampleTransmitTask::execute() {
+    String msg = "XYZ ";
+    msg += m_mesh.getMyNodeId();
     m_mesh.sendBroadcast(msg);
-    return;
-    // String msg = F("XYZ_Ping from node ");
-    // msg += m_mesh.getMyNodeId();
-    // m_mesh.sendBroadcast( msg );
 }
 
 } // namespace Tasks

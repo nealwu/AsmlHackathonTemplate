@@ -13,6 +13,8 @@
 #include <LEDMatrixDriver.hpp>
 
 #include <functional>
+#include <string>
+#include <vector>
 
 namespace Tasks {
 
@@ -32,12 +34,56 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     m_lmd.setIntensity(LEDMATRIX_INTENSITY);
 
     m_mesh.onReceive(std::bind(&ExampleDisplayTask::receivedCb, this, std::placeholders::_1, std::placeholders::_2));
+
+    m_grid = {
+        "        ",
+        "        ",
+        "        ",
+        "********",
+        "*      *",
+        "*      *",
+        "*      *",
+        "********",
+        "        ",
+        "       *",
+        "       *",
+        "       *",
+        "********",
+        "        ",
+        "       *",
+        "       *",
+        "       *",
+        "********",
+        "        ",
+        "*      *",
+        "*  **  *",
+        "*  **  *",
+        "********",
+        "        ",
+        "********",
+        "   **   ",
+        "   **   ",
+        "   **   ",
+        "********",
+        "        ",
+        "        ",
+        "        "
+    };
 }
 
 //! Update display
 void ExampleDisplayTask::execute() {
     m_lmd.clear();
-    m_lmd.setPixel(m_x, 0, true);
+
+    for (int row = 0; row < (int) m_grid.size(); row++) {
+        int display_row = row ^ 7;
+
+        for (int col = 0; col < (int) m_grid[row].size(); col++)
+            m_lmd.setPixel(display_row, col, m_grid[row][col] != ' ');
+    }
+    
+    m_lmd.setPixel(m_x ^ 7, 0, !m_lmd.getPixel(m_x ^ 7, 0));
+
     // for (int i = 0; i < 32; i++) {
     //     int length = i / 4;
 
@@ -48,15 +94,11 @@ void ExampleDisplayTask::execute() {
 }
 
 void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg) {
-    MY_DEBUG_PRINTLN("Received data in ExampleDisplayTask");
-    MY_DEBUG_PRINTF("Message: %s\n", msg.c_str());
-
-    if (!msg.equals("XYZ"))
+    if (!msg.startsWith("XYZ"))
         return;
-
-    if (++m_x >= LEDMATRIX_WIDTH) {
-        m_x = 0;
-    }
+    
+    MY_DEBUG_PRINTF("Received message: %s\n", msg.c_str());
+    m_x = (m_x + 1) % LEDMATRIX_WIDTH;
 }
 
 } // namespace Tasks
