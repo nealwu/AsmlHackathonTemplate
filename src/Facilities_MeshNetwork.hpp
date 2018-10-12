@@ -11,6 +11,7 @@
 
 #include "painlessMesh.h"
 #include <functional>
+#include <IPAddress.h>
 
 namespace Facilities {
 
@@ -31,6 +32,7 @@ public:
    void update();
    void initialize(const __FlashStringHelper *prefix, const __FlashStringHelper *password, Scheduler& taskScheduler);
 
+   IPAddress getIP();
    void sendBroadcast(String& message);
    NodeId getMyNodeId();
 

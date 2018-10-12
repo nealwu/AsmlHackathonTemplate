@@ -41,6 +41,11 @@ void MeshNetwork::update()
    m_mesh.update();
 }
 
+IPAddress MeshNetwork::getIP()
+{
+    return m_mesh.getAPIP();
+}
+
 void MeshNetwork::sendBroadcast(String &message)
 {
    MY_DEBUG_PRINT("Broadcasting message: "); MY_DEBUG_PRINTLN(message);
