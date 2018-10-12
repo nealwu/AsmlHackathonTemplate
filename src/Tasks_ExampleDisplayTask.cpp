@@ -133,7 +133,7 @@ void ExampleDisplayTask::execute() {
 
     for (int row = 0; row < (int) m_grid.size(); row++)
         for (int col = m_index * LEDMATRIX_HEIGHT; col < (m_index + 1) * LEDMATRIX_HEIGHT; col++)
-            m_lmd.setPixel(display_row(row), col, m_grid[row][col] != ' ');
+            m_lmd.setPixel(display_row(row), col % LEDMATRIX_HEIGHT, m_grid[row][col] != ' ');
 
     // Flip the pixel at m_x, 0
     // m_lmd.setPixel(display_row(m_x), 0, !m_lmd.getPixel(display_row(m_x), 0));
