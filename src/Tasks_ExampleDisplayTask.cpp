@@ -154,6 +154,7 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     ids.push_back(id);
     ids.push_back(m_mesh.getMyNodeId());
     std::sort(ids.begin(), ids.end());
+    ids.resize(std::unique(ids.begin(), ids.end()) - ids.begin());
     m_index = std::find(ids.begin(), ids.end(), m_mesh.getMyNodeId()) - ids.begin();
     MY_DEBUG_PRINTF("My index is %d\n", m_index);
     m_x = (m_x + 1) % LEDMATRIX_WIDTH;
