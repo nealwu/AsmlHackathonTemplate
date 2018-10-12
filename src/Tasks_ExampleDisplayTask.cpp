@@ -128,6 +128,67 @@ int display_row(int row) {
     return row ^ 7;
 }
 
+std::vector<std::string> scale(std::vector<std::string> original, int nodes) {
+    std::vector<std::string> scale;
+    scale = {
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                "
+    };
+
+    for (int x=0; x<nodes*4; x++) {
+        for (int y=0; y<nodes*4; y++) {
+            scale[x + 4 * (4 - nodes)][y] = original[x*4/nodes][y*4/nodes];
+        }
+        for (int y=nodes*8; y>nodes*4; y--) {
+            scale[x + 4 * (4 - nodes)][y-1] = original[x*4/nodes][(y*4/nodes)-1];
+        }
+    }
+
+    for (int x=nodes*8; x>nodes*4; x--) {
+        for (int y=0; y<nodes*4; y++) {
+            scale[x-1 + 4 * (4 - nodes)][y] = original[(x*4/nodes)-1][y*4/nodes];
+        }
+        for (int y=nodes*8; y>nodes*4; y--) {
+            scale[x-1 + 4 * (4 - nodes)][y-1] = original[(x*4/nodes)-1][(y*4/nodes)-1];
+        }
+    }
+
+    for (int i = 0; i<32; i++) {
+        MY_DEBUG_PRINTF("%d %s\n",i, scale[i].c_str());
+    }
+    return scale;
+} 
+
 //! Update display
 void ExampleDisplayTask::execute() {
     m_lmd.clear();
