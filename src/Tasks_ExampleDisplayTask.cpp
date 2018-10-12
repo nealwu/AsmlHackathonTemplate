@@ -19,7 +19,7 @@
 #include <map>
 #include <string>
 #include <vector>
-
+#include <math.h>
 namespace Tasks {
 
 
@@ -71,15 +71,34 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
 
     assert((int) m_grid.size() == N);
 
-    for (int row = 0; row < N; row++) {
-        assert((int) m_grid[row].size() == N);
+    // for (int row = 0; row < N; row++) {
+    //     assert((int) m_grid[row].size() == N);
 
-        for (int col = 0; col < N; col++) {
-            int cell_index = max(abs(2 * row - (N - 1)), abs(2 * col - (N - 1)));
-            m_grid[row][col] = cell_index % 8 >= 6 ? '*' : ' ';
+    //     for (int col = 0; col < N; col++) {
+    //         int cell_index = max(abs(2 * row - (N - 1)), abs(2 * col - (N - 1)));
+    //         m_grid[row][col] = cell_index % 8 >= 6 ? '*' : ' ';
+    //     }
+    // }
+
+ int radius = 15;
+    int i,j;
+    for (i=0; i<=2*radius; i++)
+    {
+        for (j=0; j<=2*radius; j++)
+        {
+            double distance = sqrt((double)(i-radius)*(i-radius) + (j-radius)*(j-radius));
+            if (/*distance>radius-0.5 &&*/ distance<radius+0.5)
+            {
+                m_grid[i][j] = '*';
+                //printf("*");
+            }
+            else
+            { //printf(" ");
+            m_grid[i][j] = ' ';
+            }
         }
+        //printf("\n");
     }
-
     // m_grid = {
     //     "        ",
     //     "        ",
