@@ -178,13 +178,14 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     char str[100];
     Facilities::MeshNetwork::NodeId their_id, my_id;
     int seconds_to_next = -1;
-    int values_read = sscanf(msg.c_str(), "%s %ud %d", str, &their_id, &seconds_to_next);
+    sscanf(msg.c_str(), "%s %u %d", str, &their_id, &seconds_to_next);
+    MY_DEBUG_PRINTF(("seconds_to_next is " + to_string(seconds_to_next) + "\n").c_str());
 
     if (seconds_to_next >= 0) {
         int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
         next_time_goal = current_time + seconds_to_next * 1e9;
         transmit_task->next_time = next_time_goal;
-        MY_DEBUG_PRINTLN(("Got a time; setting next time goal to " + to_string(next_time_goal)).c_str());
+        MY_DEBUG_PRINTF(("Got a time; setting next time goal to " + to_string(next_time_goal) + "\n").c_str());
     }
 
     assert(string(str) == "XYZ");
