@@ -53,6 +53,25 @@ string to_string(long long n) {
     return str;
 }
 
+std::vector<std::string> make_circle(double radius, bool full = true) {
+    std::vector<std::string> grid;
+    int N = 32;
+
+    for (int i = 0; i < N; i++)
+        grid.push_back(string(N, ' '));
+
+    double center = (N - 1) / 2.0;
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            double distance = sqrt((i - center) * (i - center) + (j - center) * (j - center));
+            grid[i][j] = distance <= radius + 0.5 ? '*' : ' ';
+        }
+    }
+
+    return grid;
+}
+
 //! Initializes the LED Matrix display.
 ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     Task(POLL_DELAY_MS , TASK_FOREVER, std::bind(&ExampleDisplayTask::execute, this)),
@@ -63,13 +82,13 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     m_mesh.onReceive(std::bind(&ExampleDisplayTask::receivedCb, this, std::placeholders::_1, std::placeholders::_2));
 
     m_index = 0;
-    m_grid = {};
+    current_grid = 0;
+    next_time_goal = 0;
+    m_grids.resize(2);
     int N = 32;
 
-    for (int i = 0; i < N; i++)
-        m_grid.push_back(string(N, ' '));
-
-    assert((int) m_grid.size() == N);
+    m_grids[0] = make_circle((N - 1) / 2.0, true);
+    m_grids[1] = make_circle(5, true);
 
     // for (int row = 0; row < N; row++) {
     //     assert((int) m_grid[row].size() == N);
@@ -80,13 +99,6 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     //     }
     // }
 
-    double radius = (N - 1) / 2.0;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            double distance = sqrt((i - radius) * (i - radius) + (j - radius) * (j - radius));
-            m_grid[i][j] = distance <= radius + 0.5 ? '*' : ' ';
-        }
-    }
     // m_grid = {
     //     "        ",
     //     "        ",
@@ -131,11 +143,26 @@ int display_row(int row) {
 //! Update display
 void ExampleDisplayTask::execute() {
     m_lmd.clear();
-    assert((int) m_grid.size() == LEDMATRIX_WIDTH);
+    int64_t current_time = std::chrono::system_clock::now().time_since_epoch().count();
+    bool empty_display = false;
+    MY_DEBUG_PRINTF((to_string(current_time) + ' ' + to_string(next_time_goal) + "\n").c_str());
 
-    for (int row = 0; row < (int) m_grid.size(); row++)
-        for (int col = m_index * LEDMATRIX_HEIGHT; col < (m_index + 1) * LEDMATRIX_HEIGHT; col++)
-            m_lmd.setPixel(display_row(row), col % LEDMATRIX_HEIGHT, m_grid[row][col] != ' ');
+    if (current_time >= next_time_goal) {
+        current_grid = (current_grid + 1) % m_grids.size();
+        empty_display = true;
+
+        // Flip after 4 seconds.
+        next_time_goal = current_time + 4e9;
+    }
+
+    if (!empty_display) {
+        std::vector<std::string> &m_grid = m_grids[current_grid];
+        assert((int) m_grid.size() == LEDMATRIX_WIDTH);
+
+        for (int row = 0; row < (int) m_grid.size(); row++)
+            for (int col = m_index * LEDMATRIX_HEIGHT; col < (m_index + 1) * LEDMATRIX_HEIGHT; col++)
+                m_lmd.setPixel(display_row(row), col % LEDMATRIX_HEIGHT, m_grid[row][col] != ' ');
+    }
 
     // Flip the pixel at m_x, 0
     // m_lmd.setPixel(display_row(m_x), 0, !m_lmd.getPixel(display_row(m_x), 0));
@@ -164,7 +191,8 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     for (auto &id : id_last_seen)
         ids.push_back(id.first);
 
-    int64_t cutoff_time = current_time - std::chrono::milliseconds(5000).count();
+    // Things are alive if we got an update from them at most 5 seconds ago
+    int64_t cutoff_time = current_time - 5e9;
 
     for (auto &id: ids)
         if (id_last_seen[id] < cutoff_time) {

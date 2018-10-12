@@ -48,10 +48,12 @@ private:
    Facilities::MeshNetwork& m_mesh;
    LEDMatrixDriver m_lmd;
 
-   std::vector<std::string> m_grid;
+   std::vector<std::vector<std::string>> m_grids;
    int m_index;
 
    int m_x;
+   int current_grid;
+   int64_t next_time_goal;
 
    void receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg);
 
