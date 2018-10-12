@@ -80,24 +80,12 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     //     }
     // }
 
- int radius = 15;
-    int i,j;
-    for (i=0; i<=2*radius; i++)
-    {
-        for (j=0; j<=2*radius; j++)
-        {
-            double distance = sqrt((double)(i-radius)*(i-radius) + (j-radius)*(j-radius));
-            if (/*distance>radius-0.5 &&*/ distance<radius+0.5)
-            {
-                m_grid[i][j] = '*';
-                //printf("*");
-            }
-            else
-            { //printf(" ");
-            m_grid[i][j] = ' ';
-            }
+    double radius = (N - 1) / 2.0;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            double distance = sqrt((i - radius) * (i - radius) + (j - radius) * (j - radius));
+            m_grid[i][j] = distance <= radius + 1e-9 ? '*' : ' ';
         }
-        //printf("\n");
     }
     // m_grid = {
     //     "        ",
