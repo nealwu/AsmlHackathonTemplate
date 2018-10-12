@@ -84,7 +84,7 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             double distance = sqrt((i - radius) * (i - radius) + (j - radius) * (j - radius));
-            m_grid[i][j] = distance <= radius + 1e-9 ? '*' : ' ';
+            m_grid[i][j] = distance <= radius + 0.5 ? '*' : ' ';
         }
     }
     // m_grid = {
