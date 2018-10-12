@@ -163,7 +163,7 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
         if (id_last_seen[id] < cutoff_time) {
             MY_DEBUG_PRINTF(("Erasing " + to_string(id) + " which has not been seen since " + to_string(id_last_seen[id]) + "; cutoff is " + to_string(cutoff_time) +
                             " and current time is " + to_string(current_time) + "\n").c_str());
-            id_last_seen.erase(id);
+            // id_last_seen.erase(id);
         }
 
     m_index = 0;
