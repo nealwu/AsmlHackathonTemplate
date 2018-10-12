@@ -18,11 +18,11 @@ namespace Tasks {
 
 ExampleTransmitTask::ExampleTransmitTask(Facilities::MeshNetwork& mesh) :
     Task(TASK_SECOND * 2 , TASK_FOREVER, std::bind(&ExampleTransmitTask::execute, this)),
-    m_mesh(mesh), next_time(-1) {
+    next_time(-1), m_mesh(mesh) {
 
 }
 
-void ExampleTransmitTask::setDisplay(ExampleDisplayTask *task) {
+void ExampleTransmitTask::setDisplay(void *task) {
     display_task = task;
 }
 
@@ -38,7 +38,7 @@ void ExampleTransmitTask::execute() {
     if (current_time >= next_time) {
         msg += " 4";
         next_time = current_time + 4e9;
-        display_task->next_time_goal = next_time;
+        ((ExampleDisplayTask *) display_task)->next_time_goal = next_time;
     } else {
         msg += " -1";
     }

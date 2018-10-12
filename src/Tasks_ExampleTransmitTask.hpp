@@ -29,11 +29,10 @@ public:
 	ExampleTransmitTask(const ExampleTransmitTask& other) = delete;
 	ExampleTransmitTask(ExampleTransmitTask&& other) = delete;
 	ExampleTransmitTask& operator=(const ExampleTransmitTask& other) = delete;
-    void setDisplay(ExampleDisplayTask *task);
-
-   void execute();
+    void setDisplay(void *task);
+    void execute();
+    void *display_task;
     int64_t next_time;
-    ExampleDisplayTask *display_task;
 
 private:
    Facilities::MeshNetwork& m_mesh;

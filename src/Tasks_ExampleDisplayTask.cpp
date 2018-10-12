@@ -73,7 +73,7 @@ std::vector<std::string> make_circle(double radius, bool full = true) {
 }
 
 
-void ExampleDisplayTask::setTransmit(ExampleTransmitTask *task) {
+void ExampleDisplayTask::setTransmit(void *task) {
     transmit_task = task;
 }
 
@@ -189,7 +189,7 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     if (seconds_to_next >= 0) {
         int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
         next_time_goal = current_time + seconds_to_next * 1e9;
-        transmit_task->next_time = next_time_goal;
+        ((ExampleTransmitTask *) transmit_task)->next_time = next_time_goal;
         MY_DEBUG_PRINTF(("Got a time; setting next time goal to " + to_string(next_time_goal) + "\n").c_str());
     }
 
