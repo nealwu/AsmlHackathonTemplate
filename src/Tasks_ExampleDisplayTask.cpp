@@ -183,9 +183,6 @@ std::vector<std::string> scale(std::vector<std::string> original, int nodes) {
         }
     }
 
-    for (int i = 0; i<32; i++) {
-        MY_DEBUG_PRINTF("%d %s\n",i, scale[i].c_str());
-    }
     return scale;
 } 
 
