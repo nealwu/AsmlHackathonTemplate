@@ -145,7 +145,6 @@ void ExampleDisplayTask::execute() {
     m_lmd.clear();
     int64_t current_time = std::chrono::system_clock::now().time_since_epoch().count();
     bool empty_display = false;
-    MY_DEBUG_PRINTF((to_string(current_time) + ' ' + to_string(next_time_goal) + "\n").c_str());
 
     if (current_time >= next_time_goal) {
         current_grid = (current_grid + 1) % m_grids.size();
