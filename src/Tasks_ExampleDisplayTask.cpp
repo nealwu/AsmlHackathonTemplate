@@ -143,7 +143,7 @@ void ExampleDisplayTask::execute() {
 void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg) {
     if (!msg.startsWith("XYZ"))
         return;
-    
+
     static std::vector<Facilities::MeshNetwork::NodeId> ids;
 
     MY_DEBUG_PRINTF("Received message: %s\n", msg.c_str());
@@ -155,6 +155,7 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     ids.push_back(m_mesh.getMyNodeId());
     std::sort(ids.begin(), ids.end());
     m_index = std::find(ids.begin(), ids.end(), m_mesh.getMyNodeId()) - ids.begin();
+    MY_DEBUG_PRINTF("My index is %d\n", m_index);
     m_x = (m_x + 1) % LEDMATRIX_WIDTH;
 }
 
