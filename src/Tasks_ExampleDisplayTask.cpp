@@ -12,6 +12,7 @@
 
 #include <LEDMatrixDriver.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <functional>
 #include <string>
@@ -143,15 +144,17 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     if (!msg.startsWith("XYZ"))
         return;
     
-    static set<uint32_t> ids;
+    static std::vector<Facilities::MeshNetwork::NodeId> ids;
 
     MY_DEBUG_PRINTF("Received message: %s\n", msg.c_str());
     char str[100];
     int id;
-    sscanf(msg.c_str(), "%s %d", str, id);
+    sscanf(msg.c_str(), "%s %d", str, &id);
     assert(string(str) == "XYZ");
-    ids.insert(id);
-    ids.insert(m_mesh.getMyNodeId());
+    ids.push_back(id);
+    ids.push_back(m_mesh.getMyNodeId());
+    std::sort(ids.begin(), ids.end());
+    m_index = std::find(ids.begin(), ids.end(), m_mesh.getMyNodeId()) - ids.begin();
     m_x = (m_x + 1) % LEDMATRIX_WIDTH;
 }
 
