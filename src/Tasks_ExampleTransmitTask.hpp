@@ -9,6 +9,8 @@
 #ifndef __Tasks_ExampleTransmitTask__
 #define __Tasks_ExampleTransmitTask__
 
+#include "Tasks_ExampleDisplayTask.hpp"
+
 #include <painlessMesh.h>
 #include <functional>
 
@@ -27,9 +29,11 @@ public:
 	ExampleTransmitTask(const ExampleTransmitTask& other) = delete;
 	ExampleTransmitTask(ExampleTransmitTask&& other) = delete;
 	ExampleTransmitTask& operator=(const ExampleTransmitTask& other) = delete;
+    void setDisplay(ExampleDisplayTask *task);
 
    void execute();
     int64_t next_time;
+    ExampleDisplayTask *display_task;
 
 private:
    Facilities::MeshNetwork& m_mesh;

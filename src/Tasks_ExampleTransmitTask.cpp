@@ -22,6 +22,10 @@ ExampleTransmitTask::ExampleTransmitTask(Facilities::MeshNetwork& mesh) :
 
 }
 
+void ExampleTransmitTask::setDisplay(ExampleDisplayTask *task) {
+    display_task = task;
+}
+
 void ExampleTransmitTask::execute() {
     int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
 
@@ -34,6 +38,7 @@ void ExampleTransmitTask::execute() {
     if (current_time >= next_time) {
         msg += " 4";
         next_time = current_time + 4e9;
+        display_task->next_time_goal = next_time;
     } else {
         msg += " -1";
     }

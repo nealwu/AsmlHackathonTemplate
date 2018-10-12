@@ -37,9 +37,7 @@ public:
 	ExampleDisplayTask& operator=(const ExampleDisplayTask& other) = delete;
 
    void execute();
-   void setTransmit(ExampleTransmitTask *task) {
-       transmit_task = task;
-   }
+   void setTransmit(ExampleTransmitTask *task);
 
 private:
    static const int LEDMATRIX_WIDTH;

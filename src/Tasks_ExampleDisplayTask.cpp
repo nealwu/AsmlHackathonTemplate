@@ -72,6 +72,11 @@ std::vector<std::string> make_circle(double radius, bool full = true) {
     return grid;
 }
 
+
+void ExampleDisplayTask::setTransmit(ExampleTransmitTask *task) {
+    transmit_task = task;
+}
+
 //! Initializes the LED Matrix display.
 ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     Task(POLL_DELAY_MS , TASK_FOREVER, std::bind(&ExampleDisplayTask::execute, this)),
