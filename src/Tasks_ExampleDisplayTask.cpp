@@ -30,6 +30,29 @@ const int ExampleDisplayTask::LEDMATRIX_INTENSITY = 5;
 const int ExampleDisplayTask::LEDMATRIX_CS_PIN = 16;
 const unsigned long ExampleDisplayTask::POLL_DELAY_MS = 100;
 
+string to_string(long long n) {
+    bool negative = false;
+
+    if (n < 0) {
+        negative = true;
+        n = -n;
+    }
+
+    string str = "";
+
+    do {
+        str += n % 10 + '0';
+        n /= 10;
+    } while (n != 0);
+
+    reverse(str.begin(), str.end());
+
+    if (negative)
+        str = "-" + str;
+
+    return str;
+}
+
 //! Initializes the LED Matrix display.
 ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     Task(POLL_DELAY_MS , TASK_FOREVER, std::bind(&ExampleDisplayTask::execute, this)),
@@ -40,42 +63,12 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     m_mesh.onReceive(std::bind(&ExampleDisplayTask::receivedCb, this, std::placeholders::_1, std::placeholders::_2));
 
     m_index = 0;
-    m_grid = {
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
-    };
-
+    m_grid = {};
     int N = 32;
+
+    for (int i = 0; i < N; i++)
+        m_grid.push_back(string(N, ' '));
+
     assert((int) m_grid.size() == N);
 
     for (int row = 0; row < N; row++) {
@@ -146,7 +139,7 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     if (!msg.startsWith("XYZ"))
         return;
 
-    static std::map<Facilities::MeshNetwork::NodeId, uint64_t> id_last_seen;
+    static std::map<Facilities::MeshNetwork::NodeId, int64_t> id_last_seen;
 
     MY_DEBUG_PRINTF("Received message: %s\n", msg.c_str());
     char str[100];
@@ -154,7 +147,7 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     sscanf(msg.c_str(), "%s %ud", str, &their_id);
     assert(string(str) == "XYZ");
 
-    uint64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
+    int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
     id_last_seen[their_id] = current_time;
     my_id = m_mesh.getMyNodeId();
     id_last_seen[my_id] = current_time;
@@ -164,11 +157,12 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     for (auto &id : id_last_seen)
         ids.push_back(id.first);
 
-    uint64_t cutoff_time = current_time - std::chrono::milliseconds(2500).count();
+    int64_t cutoff_time = current_time - std::chrono::milliseconds(5000).count();
 
     for (auto &id: ids)
         if (id_last_seen[id] < cutoff_time) {
-            MY_DEBUG_PRINTF("Erasing %lld which has not been seen since %lld; cutoff is %lld and current time is %lld\n", id, id_last_seen[id], cutoff_time, current_time);
+            MY_DEBUG_PRINTF(("Erasing " + to_string(id) + " which has not been seen since " + to_string(id_last_seen[id]) + "; cutoff is " + to_string(cutoff_time) +
+                            " and current time is " + to_string(current_time) + "\n").c_str());
             id_last_seen.erase(id);
         }
 
