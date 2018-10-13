@@ -67,7 +67,7 @@ std::vector<std::string> make_circle(double radius, bool full = true) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             double distance = sqrt((i - center) * (i - center) + (j - center) * (j - center));
-            grid[i][j] = distance <= radius + 0.5 && (full || distance >= radius - 1.0) ? '*' : ' ';
+            grid[i][j] = distance <= radius + 0.5 && (full || distance >= radius - 0.5) ? '*' : ' ';
         }
     }
 
