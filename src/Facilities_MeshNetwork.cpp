@@ -57,6 +57,10 @@ MeshNetwork::NodeId MeshNetwork::getMyNodeId()
    return m_mesh.getNodeId();
 }
 
+uint32_t MeshNetwork::getNodeTime() {
+    return m_mesh.getNodeTime();
+}
+
 void MeshNetwork::onReceive(receivedCallback_t receivedCallback)
 {
    m_mesh.onReceive(receivedCallback);

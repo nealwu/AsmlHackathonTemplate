@@ -35,6 +35,7 @@ public:
    IPAddress getIP();
    void sendBroadcast(String& message);
    NodeId getMyNodeId();
+   uint32_t getNodeTime();
 
    void onReceive(receivedCallback_t receivedCallback);
 

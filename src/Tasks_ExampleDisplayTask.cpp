@@ -136,6 +136,8 @@ void ExampleDisplayTask::execute() {
     // Flip the pixel at m_x, 0
     // m_lmd.setPixel(display_row(m_x), 0, !m_lmd.getPixel(display_row(m_x), 0));
     m_lmd.display();
+
+    MY_DEBUG_PRINTF(("Time: " + to_string(m_mesh.getNodeTime()) + "\n").c_str());
 }
 
 void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg) {
