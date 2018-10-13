@@ -32,7 +32,7 @@ void MeshNetwork::initialize(const __FlashStringHelper *prefix, const __FlashStr
 {
    // Set debug messages before init() so that you can see startup messages.
    m_mesh.setDebugMsgTypes( ERROR | STARTUP );  // To enable all: ERROR | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE
-   m_mesh.init( prefix, password, &taskScheduler, MeshNetwork::PORT );
+   m_mesh.init( prefix, password, &taskScheduler, MeshNetwork::PORT, WIFI_AP_STA, 9 );
 }
 
 //! Update mesh; forward call to painlessMesh.
