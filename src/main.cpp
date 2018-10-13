@@ -13,9 +13,9 @@ namespace {
 Scheduler                  taskScheduler;
 
 Facilities::MeshNetwork    meshNetwork;
-WebServer                  webServer(meshNetwork);
 Tasks::ExampleTransmitTask exampleTransmitTask(meshNetwork);
 Tasks::ExampleDisplayTask  exampleDisplayTask(meshNetwork);
+WebServer                  webServer(meshNetwork, exampleDisplayTask);
 }
 
 

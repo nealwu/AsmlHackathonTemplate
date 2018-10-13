@@ -39,6 +39,8 @@ public:
    void setTransmit(void *task);
    int64_t next_time_goal;
    void *transmit_task;
+   
+   void update(String state);
 
 private:
    static const int LEDMATRIX_WIDTH;
@@ -56,6 +58,7 @@ private:
 
    int m_x;
    int current_grid;
+   int m_static_index;
 
    void receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg);
 

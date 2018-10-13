@@ -79,6 +79,7 @@ void ExampleDisplayTask::setTransmit(void *task) {
 
 //! Initializes the LED Matrix display.
 ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
+    m_static_index(-1),
     Task(POLL_DELAY_MS , TASK_FOREVER, std::bind(&ExampleDisplayTask::execute, this)),
     m_mesh(mesh), m_lmd(LEDMATRIX_SEGMENTS, LEDMATRIX_CS_PIN), m_x(0) {
     m_lmd.setEnabled(true);
@@ -159,8 +160,8 @@ void ExampleDisplayTask::execute() {
         next_time_goal = current_time + 4e9;
     }
 
-    if (!empty_display) {
-        std::vector<std::string> &m_grid = m_grids[current_grid];
+    if (!empty_display || m_static_index != -1) {
+        std::vector<std::string> &m_grid = m_grids[m_static_index == -1 ? current_grid : m_static_index];
         assert((int) m_grid.size() == LEDMATRIX_WIDTH);
 
         for (int row = 0; row < (int) m_grid.size(); row++)
@@ -174,6 +175,10 @@ void ExampleDisplayTask::execute() {
 }
 
 void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg) {
+    if (msg.startsWith("IMG")) {
+        update(msg.substring(3));
+        return;
+    }
     if (!msg.startsWith("XYZ"))
         return;
 
@@ -226,6 +231,28 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
 
     MY_DEBUG_PRINTF("My index is %d\n", m_index);
     m_x = (m_x + 1) % LEDMATRIX_WIDTH;
+}
+
+void ExampleDisplayTask::update(String state) {
+    m_static_index = 0;
+    vector<string> grid = {""};
+    for (char ch: state) {
+        if (ch == '\n') {
+            grid.push_back("");
+        } else if (ch == '*') {
+            grid.back().push_back(ch);
+        }
+    }
+
+    auto &curGrid = m_grids[m_static_index];
+    curGrid.assign(LEDMATRIX_WIDTH, string(LEDMATRIX_WIDTH, ' '));
+    for (int i = 0; i < min(grid.size(), curGrid.size()); i++) {
+        for (int j = 0; j < min(grid[i].size(), curGrid[i].size()); j++) {
+            if (grid[i][j] != ' ') {
+                curGrid[i][j] = '*';
+            }
+        }
+    }
 }
 
 } // namespace Tasks
