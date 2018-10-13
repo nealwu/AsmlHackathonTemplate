@@ -30,6 +30,8 @@ const int ExampleDisplayTask::LEDMATRIX_INTENSITY = 5;
 const int ExampleDisplayTask::LEDMATRIX_CS_PIN = 16;
 const unsigned long ExampleDisplayTask::POLL_DELAY_MS = 100;
 
+const int N = 32;
+
 string to_string(long long n) {
     bool negative = false;
 
@@ -55,7 +57,6 @@ string to_string(long long n) {
 
 std::vector<std::string> make_circle(double radius, bool full = true) {
     std::vector<std::string> grid;
-    int N = 32;
 
     for (int i = 0; i < N; i++)
         grid.push_back(string(N, ' '));
@@ -91,7 +92,6 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     current_grid = 0;
     next_time_goal = 0;
     m_grids.resize(2);
-    int N = 32;
 
     m_grids[0] = make_circle((N - 1) / 2.0, true);
     m_grids[1] = make_circle(5, true);
@@ -104,41 +104,6 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     //         m_grid[row][col] = cell_index % 8 >= 6 ? '*' : ' ';
     //     }
     // }
-
-    // m_grid = {
-    //     "        ",
-    //     "        ",
-    //     "        ",
-    //     "********",
-    //     "*      *",
-    //     "*      *",
-    //     "*      *",
-    //     "********",
-    //     "        ",
-    //     "       *",
-    //     "       *",
-    //     "       *",
-    //     "********",
-    //     "        ",
-    //     "       *",
-    //     "       *",
-    //     "       *",
-    //     "********",
-    //     "        ",
-    //     "*      *",
-    //     "*  **  *",
-    //     "*  **  *",
-    //     "********",
-    //     "        ",
-    //     "********",
-    //     "   **   ",
-    //     "   **   ",
-    //     "   **   ",
-    //     "********",
-    //     "        ",
-    //     "        ",
-    //     "        "
-    // };
 }
 
 int display_row(int row) {
