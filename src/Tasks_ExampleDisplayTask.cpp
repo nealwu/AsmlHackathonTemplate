@@ -31,6 +31,7 @@ const int ExampleDisplayTask::LEDMATRIX_CS_PIN = 16;
 const unsigned long ExampleDisplayTask::POLL_DELAY_MS = 100;
 
 const int N = 32;
+const int CHANGE_DISPLAY_TIME = 4e6;
 
 string to_string(long long n) {
     bool negative = false;
@@ -106,6 +107,11 @@ int display_row(int row) {
     return row ^ 7;
 }
 
+int get_next_change_time(int time) {
+    time += CHANGE_DISPLAY_TIME;
+    return time - time % CHANGE_DISPLAY_TIME;
+}
+
 //! Update display
 void ExampleDisplayTask::execute() {
     m_lmd.clear();
@@ -113,12 +119,14 @@ void ExampleDisplayTask::execute() {
     bool empty_display = false;
 
     if (next_time_goal == -1)
-        next_time_goal = current_time + 4e6;
+        next_time_goal = get_next_change_time(current_time);
 
     if (current_time >= next_time_goal) {
+        MY_DEBUG_PRINTF(("Current time is " + to_string(current_time) + "\n").c_str());
         current_grid = (current_grid + 1) % m_grids.size();
         empty_display = true;
-        next_time_goal = current_time + 4e6;
+        next_time_goal = get_next_change_time(current_time);
+        MY_DEBUG_PRINTF(("Next time goal is " + to_string(next_time_goal) + "\n").c_str());
     }
 
     if (!empty_display || m_static_index != -1) {
