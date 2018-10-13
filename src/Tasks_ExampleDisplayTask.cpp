@@ -155,6 +155,9 @@ void ExampleDisplayTask::execute() {
         MY_DEBUG_PRINTF(("Current time is " + to_string(current_time) + "; next time goal is " + to_string(next_time_goal) + "\n").c_str());
     }
 
+    Facilities::MeshNetwork::NodeId my_id = m_mesh.getMyNodeId();
+    id_last_seen[my_id] = id_last_seen[my_id];
+
     if (!empty_display || m_static_index != -1) {
         std::vector<std::string> &m_grid = m_grids[m_static_index == -1 ? current_grid : m_static_index];
         std::vector<std::string> scaled = scale(m_grid, id_last_seen.size());
