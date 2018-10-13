@@ -183,6 +183,11 @@ void ExampleDisplayTask::execute() {
         MY_DEBUG_PRINTF(("Current time is " + to_string(current_time) + "; next time goal is " + to_string(next_time_goal) + "\n").c_str());
     }
 
+    int64_t time_diff = (current_time - (next_time_goal - CHANGE_DISPLAY_TIME));
+    time_diff = min(time_diff, CHANGE_DISPLAY_TIME - time_diff);
+    int intensity = time_diff >= CHANGE_DISPLAY_TIME / 4 ? 5 : 5 * time_diff / (CHANGE_DISPLAY_TIME / 4);
+    m_lmd.setIntensity(intensity);
+
     Facilities::MeshNetwork::NodeId my_id = m_mesh.getMyNodeId();
     id_last_seen[my_id] = id_last_seen[my_id];
 
