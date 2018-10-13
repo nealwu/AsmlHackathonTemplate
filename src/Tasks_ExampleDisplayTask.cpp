@@ -125,7 +125,7 @@ void ExampleDisplayTask::execute() {
 
     if (current_time >= next_time_goal) {
         MY_DEBUG_PRINTF(("Current time is " + to_string(current_time) + "\n").c_str());
-        current_grid = (current_grid + 1) % m_grids.size();
+        current_grid = (next_time_goal / CHANGE_DISPLAY_TIME) % m_grids.size();
         empty_display = true;
         next_time_goal = get_next_change_time(current_time);
         MY_DEBUG_PRINTF(("Next time goal is " + to_string(next_time_goal) + "\n").c_str());
