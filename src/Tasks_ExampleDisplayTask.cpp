@@ -80,9 +80,8 @@ void ExampleDisplayTask::setTransmit(void *task) {
 
 //! Initializes the LED Matrix display.
 ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
-    m_static_index(-1),
     Task(POLL_DELAY_MS , TASK_FOREVER, std::bind(&ExampleDisplayTask::execute, this)),
-    m_mesh(mesh), m_lmd(LEDMATRIX_SEGMENTS, LEDMATRIX_CS_PIN), m_x(0) {
+    m_mesh(mesh), m_lmd(LEDMATRIX_SEGMENTS, LEDMATRIX_CS_PIN), m_x(0), m_static_index(-1) {
     m_lmd.setEnabled(true);
     m_lmd.setIntensity(LEDMATRIX_INTENSITY);
 
@@ -211,8 +210,8 @@ void ExampleDisplayTask::update(String state) {
 
     auto &curGrid = m_grids[m_static_index];
     curGrid.assign(LEDMATRIX_WIDTH, string(LEDMATRIX_WIDTH, ' '));
-    for (int i = 0; i < min(grid.size(), curGrid.size()); i++) {
-        for (int j = 0; j < min(grid[i].size(), curGrid[i].size()); j++) {
+    for (int i = 0; i < (int) min(grid.size(), curGrid.size()); i++) {
+        for (int j = 0; j < (int) min(grid[i].size(), curGrid[i].size()); j++) {
             if (grid[i][j] != ' ') {
                 curGrid[i][j] = '*';
             }
