@@ -115,7 +115,7 @@ void ExampleDisplayTask::execute() {
     if (next_time_goal == -1)
         next_time_goal = current_time + 4e6;
 
-    if (current_time) {
+    if (current_time >= next_time_goal) {
         current_grid = (current_grid + 1) % m_grids.size();
         empty_display = true;
         next_time_goal = current_time + 4e6;
