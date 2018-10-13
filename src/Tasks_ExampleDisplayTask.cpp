@@ -67,7 +67,7 @@ std::vector<std::string> make_circle(double radius, bool full = true) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             double distance = sqrt((i - center) * (i - center) + (j - center) * (j - center));
-            grid[i][j] = distance <= radius + 0.5 ? '*' : ' ';
+            grid[i][j] = distance <= radius + 0.5 && (full || distance >= radius - 0.5) ? '*' : ' ';
         }
     }
 
@@ -138,11 +138,12 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     m_index = 0;
     current_grid = 0;
     next_time_goal = -1;
-    m_grids.resize(3);
+    m_grids.resize(4);
 
     m_grids[0] = make_circle((N - 1) / 2.0, true);
     m_grids[1] = make_circle(5, true);
-    m_grids[2] = make_asml();
+    m_grids[2] = make_circle((N - 1) / 2.0 ,false);
+    m_grids[3] = make_asml();
 
     // for (int row = 0; row < N; row++) {
     //     assert((int) m_grid[row].size() == N);
