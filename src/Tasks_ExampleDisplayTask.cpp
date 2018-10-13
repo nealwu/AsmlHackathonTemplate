@@ -203,7 +203,7 @@ void ExampleDisplayTask::update(String state) {
     for (char ch: state) {
         if (ch == '\n') {
             grid.push_back("");
-        } else if (ch == '*') {
+        } else if (ch == '*' || ch == ' ') {
             grid.back().push_back(ch);
         }
     }
