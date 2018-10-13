@@ -74,6 +74,43 @@ std::vector<std::string> make_circle(double radius, bool full = true) {
     return grid;
 }
 
+std::vector<std::string> make_asml() {
+    return {
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "    *     ****  *     *  *      ",
+        "   * *    *     **   **  *      ",
+        "  *   *   **    * * * *  *      ",
+        " *******    **  *  *  *  *      ",
+        " *     *     *  *     *  *      ",
+        " *     *  ****  *     *  ****** ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                "
+    };
+}
+
 int scale_round(int x, int nodes) {
     return round((double) x / (8 * nodes - 1) * (N - 1));
 }
@@ -101,10 +138,11 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     m_index = 0;
     current_grid = 0;
     next_time_goal = -1;
-    m_grids.resize(2);
+    m_grids.resize(3);
 
     m_grids[0] = make_circle((N - 1) / 2.0, true);
     m_grids[1] = make_circle(5, true);
+    m_grids[2] = make_asml();
 
     // for (int row = 0; row < N; row++) {
     //     assert((int) m_grid[row].size() == N);
