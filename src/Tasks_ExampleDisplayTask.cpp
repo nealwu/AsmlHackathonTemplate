@@ -149,16 +149,16 @@ void ExampleDisplayTask::execute() {
     }
 
     if (current_time >= next_time_goal) {
-        MY_DEBUG_PRINTF(("Current time is " + to_string(current_time) + "\n").c_str());
         current_grid = (next_time_goal / CHANGE_DISPLAY_TIME) % m_grids.size();
         empty_display = true;
         next_time_goal = get_next_change_time(current_time);
-        MY_DEBUG_PRINTF(("Next time goal is " + to_string(next_time_goal) + "\n").c_str());
+        MY_DEBUG_PRINTF(("Current time is " + to_string(current_time) + "; next time goal is " + to_string(next_time_goal) + "\n").c_str());
     }
 
     if (!empty_display || m_static_index != -1) {
         std::vector<std::string> &m_grid = m_grids[m_static_index == -1 ? current_grid : m_static_index];
         std::vector<std::string> scaled = scale(m_grid, id_last_seen.size());
+        MY_DEBUG_PRINTF(("Displaying with " + to_string(id_last_seen.size()) + " nodes" + "\n").c_str());
         assert((int) scaled.size() == LEDMATRIX_WIDTH);
 
         for (int row = 0; row < (int) scaled.size(); row++)
