@@ -118,8 +118,10 @@ void ExampleDisplayTask::execute() {
     int64_t current_time = m_mesh.getNodeTime();
     bool empty_display = false;
 
-    if (next_time_goal == -1)
+    if (next_time_goal == -1) {
         next_time_goal = get_next_change_time(current_time);
+        current_grid = (next_time_goal / CHANGE_DISPLAY_TIME) % m_grids.size();
+    }
 
     if (current_time >= next_time_goal) {
         MY_DEBUG_PRINTF(("Current time is " + to_string(current_time) + "\n").c_str());
