@@ -16,6 +16,7 @@
 #include <LEDMatrixDriver.hpp>
 
 #include <functional>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -51,6 +52,8 @@ private:
    LEDMatrixDriver m_lmd;
 
    std::vector<std::vector<std::string>> m_grids;
+   std::vector<std::string> scaled_grid;
+   std::map<Facilities::MeshNetwork::NodeId, int64_t> id_last_seen;
    int m_index;
 
    int64_t next_time_goal;

@@ -60,7 +60,7 @@ std::vector<std::string> make_circle(double radius, bool full = true) {
     std::vector<std::string> grid;
 
     for (int i = 0; i < N; i++)
-        grid.push_back(string(N, ' '));
+        grid.push_back(std::string(N, ' '));
 
     double center = (N - 1) / 2.0;
 
@@ -73,6 +73,31 @@ std::vector<std::string> make_circle(double radius, bool full = true) {
 
     return grid;
 }
+
+std::vector<std::string> scale(std::vector<std::string> original, int nodes) {
+    std::vector<std::string> scale(N, std::string(N, ' '));
+
+    for (int x=0; x<nodes*4; x++) {
+        for (int y=0; y<nodes*4; y++) {
+            scale[x + 4 * (4 - nodes)][y] = original[x*4/nodes][y*4/nodes];
+        }
+        for (int y=nodes*8; y>nodes*4; y--) {
+            scale[x + 4 * (4 - nodes)][y-1] = original[x*4/nodes][(y*4/nodes)-1];
+        }
+    }
+
+    for (int x=nodes*8; x>nodes*4; x--) {
+        for (int y=0; y<nodes*4; y++) {
+            scale[x-1 + 4 * (4 - nodes)][y] = original[(x*4/nodes)-1][y*4/nodes];
+        }
+        for (int y=nodes*8; y>nodes*4; y--) {
+            scale[x-1 + 4 * (4 - nodes)][y-1] = original[(x*4/nodes)-1][(y*4/nodes)-1];
+        }
+    }
+
+    return scale;
+}
+
 
 
 //! Initializes the LED Matrix display.
@@ -133,11 +158,12 @@ void ExampleDisplayTask::execute() {
 
     if (!empty_display || m_static_index != -1) {
         std::vector<std::string> &m_grid = m_grids[m_static_index == -1 ? current_grid : m_static_index];
-        assert((int) m_grid.size() == LEDMATRIX_WIDTH);
+        std::vector<std::string> scaled = scale(m_grid, id_last_seen.size());
+        assert((int) scaled.size() == LEDMATRIX_WIDTH);
 
-        for (int row = 0; row < (int) m_grid.size(); row++)
+        for (int row = 0; row < (int) scaled.size(); row++)
             for (int col = m_index * LEDMATRIX_HEIGHT; col < (m_index + 1) * LEDMATRIX_HEIGHT; col++)
-                m_lmd.setPixel(display_row(row), col % LEDMATRIX_HEIGHT, m_grid[row][col] != ' ');
+                m_lmd.setPixel(display_row(row), col % LEDMATRIX_HEIGHT, scaled[row][col] != ' ');
     }
 
     // Flip the pixel at m_x, 0
@@ -152,8 +178,6 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     }
     if (!msg.startsWith("XYZ"))
         return;
-
-    static std::map<Facilities::MeshNetwork::NodeId, int64_t> id_last_seen;
 
     MY_DEBUG_PRINTF("Received message: %s\n", msg.c_str());
     char str[100];
