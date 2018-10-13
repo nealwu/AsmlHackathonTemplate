@@ -31,8 +31,6 @@ void setup()
    // Create and add tasks.
    taskScheduler.addTask( exampleTransmitTask );
    taskScheduler.addTask( exampleDisplayTask );
-   exampleDisplayTask.setTransmit(&exampleTransmitTask);
-   exampleTransmitTask.setDisplay(&exampleDisplayTask);
    exampleTransmitTask.enable();
    exampleDisplayTask.enable();
 

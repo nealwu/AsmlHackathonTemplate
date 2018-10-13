@@ -18,31 +18,13 @@ namespace Tasks {
 
 ExampleTransmitTask::ExampleTransmitTask(Facilities::MeshNetwork& mesh) :
     Task(TASK_SECOND * 2 , TASK_FOREVER, std::bind(&ExampleTransmitTask::execute, this)),
-    next_time(-1), m_mesh(mesh) {
+    m_mesh(mesh) {
 
-}
-
-void ExampleTransmitTask::setDisplay(void *task) {
-    display_task = task;
 }
 
 void ExampleTransmitTask::execute() {
-    int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
-
-    if (next_time == -1)
-        next_time = current_time + 4e9;
-
     String msg = "XYZ ";
     msg += m_mesh.getMyNodeId();
-
-    if (current_time >= next_time) {
-        msg += " 4";
-        next_time = current_time + 4e9;
-        ((ExampleDisplayTask *) display_task)->next_time_goal = next_time;
-    } else {
-        msg += " -1";
-    }
-
     m_mesh.sendBroadcast(msg);
 }
 

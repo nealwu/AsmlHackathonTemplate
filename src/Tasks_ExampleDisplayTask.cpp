@@ -74,10 +74,6 @@ std::vector<std::string> make_circle(double radius, bool full = true) {
 }
 
 
-void ExampleDisplayTask::setTransmit(void *task) {
-    transmit_task = task;
-}
-
 //! Initializes the LED Matrix display.
 ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
     Task(POLL_DELAY_MS , TASK_FOREVER, std::bind(&ExampleDisplayTask::execute, this)),
@@ -89,7 +85,7 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
 
     m_index = 0;
     current_grid = 0;
-    next_time_goal = 0;
+    next_time_goal = -1;
     m_grids.resize(2);
 
     m_grids[0] = make_circle((N - 1) / 2.0, true);
@@ -113,15 +109,16 @@ int display_row(int row) {
 //! Update display
 void ExampleDisplayTask::execute() {
     m_lmd.clear();
-    int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
+    int64_t current_time = m_mesh.getNodeTime();
     bool empty_display = false;
 
-    if (current_time >= next_time_goal) {
+    if (next_time_goal == -1)
+        next_time_goal = current_time + 4e6;
+
+    if (current_time) {
         current_grid = (current_grid + 1) % m_grids.size();
         empty_display = true;
-
-        // Flip after 4 seconds.
-        next_time_goal = current_time + 4e9;
+        next_time_goal = current_time + 4e6;
     }
 
     if (!empty_display || m_static_index != -1) {
@@ -136,8 +133,6 @@ void ExampleDisplayTask::execute() {
     // Flip the pixel at m_x, 0
     // m_lmd.setPixel(display_row(m_x), 0, !m_lmd.getPixel(display_row(m_x), 0));
     m_lmd.display();
-
-    MY_DEBUG_PRINTF(("Time: " + to_string(m_mesh.getNodeTime()) + "\n").c_str());
 }
 
 void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg) {
@@ -152,23 +147,13 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
 
     MY_DEBUG_PRINTF("Received message: %s\n", msg.c_str());
     char str[100];
-    Facilities::MeshNetwork::NodeId their_id, my_id;
-    int seconds_to_next = -1;
-    sscanf(msg.c_str(), "%s %u %d", str, &their_id, &seconds_to_next);
-    MY_DEBUG_PRINTF(("seconds_to_next is " + to_string(seconds_to_next) + "\n").c_str());
-
-    if (seconds_to_next >= 0) {
-        int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
-        next_time_goal = current_time + seconds_to_next * 1e9;
-        ((ExampleTransmitTask *) transmit_task)->next_time = next_time_goal;
-        MY_DEBUG_PRINTF(("Got a time; setting next time goal to " + to_string(next_time_goal) + "\n").c_str());
-    }
-
+    Facilities::MeshNetwork::NodeId my_id = m_mesh.getMyNodeId();
+    Facilities::MeshNetwork::NodeId their_id;
+    sscanf(msg.c_str(), "%s %u", str, &their_id);
     assert(string(str) == "XYZ");
 
-    int64_t current_time = std::chrono::steady_clock::now().time_since_epoch().count();
+    int64_t current_time = m_mesh.getNodeTime();
     id_last_seen[their_id] = current_time;
-    my_id = m_mesh.getMyNodeId();
     id_last_seen[my_id] = current_time;
 
     std::vector<Facilities::MeshNetwork::NodeId> ids;
@@ -176,14 +161,14 @@ void ExampleDisplayTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
     for (auto &id : id_last_seen)
         ids.push_back(id.first);
 
-    // Things are alive if we got an update from them at most 5 seconds ago
-    int64_t cutoff_time = current_time - 5e9;
+    // Things are alive if we got an update from them at most 10 seconds ago
+    int64_t cutoff_time = current_time - 10e6;
 
     for (auto &id: ids)
         if (id_last_seen[id] < cutoff_time) {
             MY_DEBUG_PRINTF(("Erasing " + to_string(id) + " which has not been seen since " + to_string(id_last_seen[id]) + "; cutoff is " + to_string(cutoff_time) +
                             " and current time is " + to_string(current_time) + "\n").c_str());
-            // id_last_seen.erase(id);
+            id_last_seen.erase(id);
         }
 
     m_index = 0;

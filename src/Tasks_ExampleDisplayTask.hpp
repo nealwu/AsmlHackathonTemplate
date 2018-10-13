@@ -36,10 +36,7 @@ public:
 	ExampleDisplayTask& operator=(const ExampleDisplayTask& other) = delete;
 
    void execute();
-   void setTransmit(void *task);
-   int64_t next_time_goal;
-   void *transmit_task;
-   
+
    void update(String state);
 
 private:
@@ -55,6 +52,8 @@ private:
 
    std::vector<std::vector<std::string>> m_grids;
    int m_index;
+
+   int64_t next_time_goal;
 
    int m_x;
    int current_grid;
