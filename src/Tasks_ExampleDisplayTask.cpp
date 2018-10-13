@@ -15,11 +15,11 @@
 #include <algorithm>
 #include <cassert>
 #include <chrono>
+#include <cmath>
 #include <functional>
 #include <map>
 #include <string>
 #include <vector>
-#include <math.h>
 namespace Tasks {
 
 
@@ -74,30 +74,19 @@ std::vector<std::string> make_circle(double radius, bool full = true) {
     return grid;
 }
 
-std::vector<std::string> scale(std::vector<std::string> original, int nodes) {
-    std::vector<std::string> scale(N, std::string(N, ' '));
-
-    for (int x=0; x<nodes*4; x++) {
-        for (int y=0; y<nodes*4; y++) {
-            scale[x + 4 * (4 - nodes)][y] = original[x*4/nodes][y*4/nodes];
-        }
-        for (int y=nodes*8; y>nodes*4; y--) {
-            scale[x + 4 * (4 - nodes)][y-1] = original[x*4/nodes][(y*4/nodes)-1];
-        }
-    }
-
-    for (int x=nodes*8; x>nodes*4; x--) {
-        for (int y=0; y<nodes*4; y++) {
-            scale[x-1 + 4 * (4 - nodes)][y] = original[(x*4/nodes)-1][y*4/nodes];
-        }
-        for (int y=nodes*8; y>nodes*4; y--) {
-            scale[x-1 + 4 * (4 - nodes)][y-1] = original[(x*4/nodes)-1][(y*4/nodes)-1];
-        }
-    }
-
-    return scale;
+int scale_round(int x, int nodes) {
+    return round((double) x / (8 * nodes - 1) * (N - 1));
 }
 
+std::vector<std::string> scale(std::vector<std::string> original, int nodes) {
+    std::vector<std::string> scaled(N, std::string(N, ' '));
+
+    for (int x = 0; x < 8 * nodes; x++)
+        for (int y = 0; y < 8 * nodes; y++)
+            scaled[x + 4 * (4 - nodes)][y] = original[scale_round(x, nodes)][scale_round(y, nodes)];
+
+    return scaled;
+}
 
 
 //! Initializes the LED Matrix display.
